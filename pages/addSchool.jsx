@@ -341,7 +341,7 @@ export default function AddSchool() {
                       return allowedTypes.includes(files[0].type) || "Only image files (JPEG, PNG, GIF, WebP) are allowed";
                     }
                   }
-                })
+                })}
                 type="file"
                 accept="image/*"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
