@@ -38,8 +38,8 @@ export default function AddSchool() {
           const uploadData = await uploadRes.json();
           imagePath = uploadData.imagePath;
         } else {
-          const errorText = await uploadRes.text();
-          throw new Error(errorText || "Failed to upload image");
+          const errorData = await uploadRes.json().catch(() => ({ error: "Failed to upload image" }));
+          throw new Error(errorData.error || "Failed to upload image");
         }
       }
 
@@ -54,8 +54,8 @@ export default function AddSchool() {
         toast.success("School added successfully!");
         router.push("/showSchools");
       } else {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to add school");
+        const errorData = await response.json().catch(() => ({ error: "Failed to add school" }));
+        throw new Error(errorData.error || "Failed to add school");
       }
     } catch (error) {
       toast.error(error.message);
