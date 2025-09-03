@@ -35,11 +35,11 @@ export default function AddSchool() {
         });
 
         if (uploadRes.ok) {
-          const { imagePath: path } = await uploadRes.json();
-          imagePath = path;
+          const uploadData = await uploadRes.json();
+          imagePath = uploadData.imagePath;
         } else {
-          const { error } = await uploadRes.json();
-          throw new Error(error || "Failed to upload image");
+          const errorText = await uploadRes.text();
+          throw new Error(errorText || "Failed to upload image");
         }
       }
 
@@ -54,8 +54,8 @@ export default function AddSchool() {
         toast.success("School added successfully!");
         router.push("/showSchools");
       } else {
-        const { error } = await response.json();
-        throw new Error(error);
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to add school");
       }
     } catch (error) {
       toast.error(error.message);
