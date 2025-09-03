@@ -1,0 +1,27 @@
+CREATE DATABASE IF NOT EXISTS school_db;
+USE school_db;
+
+CREATE TABLE IF NOT EXISTS schools (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  address VARCHAR(500) NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  state VARCHAR(100) NOT NULL,
+  contact VARCHAR(10) NOT NULL,
+  image VARCHAR(500),
+  email_id VARCHAR(255) NOT NULL UNIQUE,
+  INDEX idx_city (city),
+  INDEX idx_state (state)
+);SE IF NOT EXISTS school_db;
+USE school_db;
+
+CREATE TABLE IF NOT EXISTS schools (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name TEXT NOT NULL,
+  address TEXT NOT NULL,
+  city TEXT NOT NULL,
+  state TEXT NOT NULL,
+  contact VARCHAR(20) NOT NULL,
+  image TEXT NOT NULL,
+  email_id TEXT NOT NULL
+);
