@@ -22,12 +22,16 @@ export default function AddSchool() {
       let imagePath = "";
 
       if (data.image?.[0]) {
-        const formData = new FormData();
-        formData.append("image", data.image[0]);
+        const reader = new FileReader();
+        const base64 = await new Promise((resolve) => {
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(data.image[0]);
+        });
 
         const uploadRes = await fetch("/api/upload", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: base64 })
         });
 
         if (uploadRes.ok) {
@@ -326,31 +330,18 @@ export default function AddSchool() {
               <input
                 {...register("image", {
                   validate: {
-                    required: (files) =>
-                      files?.length > 0 || "Image is required",
+                    required: (files) => files?.length > 0 || "Image is required",
                     fileSize: (files) => {
                       if (!files?.[0]) return true;
-                      return (
-                        files[0].size <= 5000000 ||
-                        "File size must be less than 5MB"
-                      );
+                      return files[0].size <= 5000000 || "File size must be less than 5MB";
                     },
                     fileType: (files) => {
                       if (!files?.[0]) return true;
-                      const allowedTypes = [
-                        "image/jpeg",
-                        "image/jpg",
-                        "image/png",
-                        "image/gif",
-                        "image/webp",
-                      ];
-                      return (
-                        allowedTypes.includes(files[0].type) ||
-                        "Only image files (JPEG, PNG, GIF, WebP) are allowed"
-                      );
-                    },
-                  },
-                })}
+                      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+                      return allowedTypes.includes(files[0].type) || "Only image files (JPEG, PNG, GIF, WebP) are allowed";
+                    }
+                  }
+                })
                 type="file"
                 accept="image/*"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

@@ -1,36 +1,25 @@
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
 
-// Ensure upload directory exists
-const uploadDir = './public/schoolImages';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: uploadDir,
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-  }),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-  fileFilter: (req, file, cb) => {
-    const allowed = /\.(jpg|jpeg|png|gif|webp)$/i;
-    cb(null, allowed.test(file.originalname));
-  }
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  upload.single('image')(req, res, (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  try {
+    const { image } = req.body;
     
-    res.json({ imagePath: `/schoolImages/${req.file.filename}` });
-  });
-}
+    const result = await cloudinary.uploader.upload(image, {
+      folder: 'schools',
+    });
 
-export const config = { api: { bodyParser: false } };
+    res.json({ imagePath: result.secure_url });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
